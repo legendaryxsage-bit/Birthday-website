@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Chapter 1 — The First Light</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+</head>
+<body>
+  <div id="app-container">
+    <div id="night-bg"></div>
+    
+    <!-- Swapped beach video for forest image -->
+    <img id="forest-img" class="hidden" src="forest.png" alt="Forest Background">
+    
+    <div id="fireflies-container" class="hidden"></div>
+    <canvas id="particleCanvas"></canvas>
+    <div id="flash-overlay"></div>
+
+    <div id="scene1-orb" class="orb"></div>
+    <p id="scene1-text" class="script-text">Touch the light</p>
+
+    <!-- Corrected: Direct <img> tag for your custom heart.png -->
+    <div id="heart-wrapper" class="hidden">
+      <img id="heart-img" src="heart.png" alt="Heart">
+    </div>
+    
+    <div id="crystal-container"></div>
+
+    <!-- Living stars: generated dynamically in script.js, revealed alongside the moon/clouds -->
+    <div id="stars-container" class="hidden"></div>
+
+    <!-- Butterfly Wrapper -->
+    <div id="butterfly-wrapper" class="hidden">
+      <img id="butterfly" src="butterfly.png" alt="Butterfly">
+    </div>
+    
+    <img id="cloud1" src="cloud1.png" class="asset-img cloud hidden" alt="Cloud 1">
+    <img id="cloud2" src="cloud2.png" class="asset-img cloud-flip hidden" alt="Cloud 2">
+    <img id="cloud3" src="cloud3.png" class="asset-img cloud hidden" alt="Cloud 3">
+    <img id="cloud4" src="cloud4.png" class="asset-img cloud hidden" alt="Cloud 4">
+    <img id="cloud5" src="cloud5.png" class="asset-img cloud hidden" alt="Cloud 5">
+    <img id="cloud6" src="cloud1.png" class="asset-img cloud hidden" alt="Cloud 6">
+    <img id="cloud7" src="cloud2.png" class="asset-img cloud-flip hidden" alt="Cloud 7">
+    <img id="moon" src="moon.png" class="asset-img hidden" alt="Moon">
+  </div>
+
+  <!-- ===================== CHAPTER 2 — THE BIRTHDAY WISH ===================== -->
+  <div id="chapter2-container">
+    <canvas id="ch2-particle-canvas"></canvas>
+
+    <div id="ch2-golden-rays"></div>
+    <div id="ch2-golden-light"></div>
+
+    <div id="ch2-butterfly-wrapper">
+      <img id="ch2-butterfly" src="butterfly.png" alt="Butterfly">
+    </div>
+
+    <div id="ch2-name-text"></div>
+
+    <div id="ch2-swarm-container"></div>
+
+    <div id="ch2-greeting">
+      <p id="ch2-greeting-line1">🎂 Happy Birthday,</p>
+      <p id="ch2-greeting-line2">Bittiii! 💗👀😘💌</p>
+    </div>
+
+    <div id="ch2-hearts-container"></div>
+    <div id="ch2-sparkles-container"></div>
+
+    <!-- ============= SCENES 9-14 — COMET, TRANSITION & FINAL INVITATION ============= -->
+    <div id="ch2-comet-wrapper">
+      <div id="ch2-comet-tail"></div>
+      <div id="ch2-comet-core"></div>
+    </div>
+
+    <div id="ch2-final-message">
+      <p id="ch2-final-line1"></p>
+      <p id="ch2-final-line2"></p>
+    </div>
+
+    <div id="ch2-cta-button" role="button" tabindex="0"></div>
+  </div>
+
+  <!-- ===================== CHAPTER 4 ===================== -->
+  <div id="chapter4-container"></div>
+
+  <script src="script.js"></script>
+  <script src="chapter2.js"></script>
+  <script src="chapter3.js"></script>
+  <script src="chapter4.js"></script>
+  
+</body>
+</html>

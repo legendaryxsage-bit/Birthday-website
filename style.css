@@ -1,0 +1,364 @@
+* { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
+body, html { width: 100%; height: 100%; overflow: hidden; background-color: #000000; font-family: 'Great Vibes', cursive; }
+#app-container { position: relative; width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; }
+
+#night-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000208; opacity: 0; z-index: 0; transition: opacity 1.5s ease; }
+
+/* Forest image + fireflies — reveal during the moon close-up/zoom */
+#forest-img { 
+  position: absolute; 
+  top: 0; 
+  left: 0; 
+  width: 100%; 
+  height: 100%; 
+  object-fit: cover; 
+  object-position: center bottom; 
+  /* 👇 This places the forest exactly where the butterfly stops in the 3D space */
+  transform: translateY(-500px) scale(1.1); 
+  z-index: 14; /* Keeps it behind the front clouds */
+  opacity: 0; 
+  pointer-events: none; 
+}
+
+#fireflies-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 20; opacity: 0; pointer-events: none; }
+.firefly {
+  position: absolute;
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffffff 0%, #fff9c4 25%, #ffe066 55%, rgba(255,224,102,0) 100%);
+  box-shadow: 0 0 8px 3px rgba(255,224,102,0.9), 0 0 15px 5px rgba(255,200,80,0.45);
+  opacity: 0;
+  will-change: opacity, transform;
+}
+
+canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+#flash-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; opacity: 0; z-index: 100; pointer-events: none; }
+.hidden { display: none !important; opacity: 0 !important; }
+
+.orb { position: absolute; width: 130px; height: 130px; border-radius: 50%; background: radial-gradient(circle, #ffffff 0%, #ff1493 50%, #8a2be2 85%, transparent 100%); box-shadow: 0 0 35px #ff69b4, 0 0 75px #ff1493, 0 0 120px #8a2be2; z-index: 10; cursor: pointer; opacity: 0; }
+.script-text { position: absolute; bottom: 22%; color: #ffb6c1; font-size: 2.5rem; text-shadow: 0 0 12px #ff69b4; z-index: 10; opacity: 0; pointer-events: none; }
+
+#heart-wrapper, #butterfly-wrapper {
+  position: absolute;
+  width: 220px; height: 220px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 15;
+}
+
+#heart-img {
+  width: 100%; height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 0 20px #00ffff) drop-shadow(0 0 40px rgba(0,255,255,0.7));
+}
+
+#crystal-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 25; pointer-events: none; }
+.dom-crystal { position: absolute; width: 10px; height: 16px; background: #ffffff; clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); box-shadow: 0 0 15px #00ffff; opacity: 0; transform-origin: center; }
+
+#butterfly { width: 150px; height: auto; object-fit: contain; filter: drop-shadow(0 0 20px #00ffff); animation: wingFlap 0.25s infinite alternate ease-in-out; }
+@keyframes wingFlap { 0% { transform: scaleX(1) rotate(0deg); } 100% { transform: scaleX(0.2) rotate(4deg); } }
+
+.asset-img { position: absolute; z-index: 15; object-fit: contain; }
+#moon { 
+  width: 290px; 
+  top: -95%; 
+  z-index: 12; 
+  filter: drop-shadow(0 0 25px rgba(255,255,230,0.5)); 
+}
+
+#cloud-cluster {
+  position: absolute;
+  top: -45%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 500px;
+  height: 200px;
+  z-index: 50;
+}
+
+#cloud-cluster {
+  position: absolute;
+  top: -30%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 320px;
+  height: 120px;
+  z-index: 50;
+}
+
+#cloud-cluster img:nth-child(1) { width: 320px; top: 20px; left: 0px; z-index: 2; }
+#cloud-cluster img:nth-child(2) { width: 350px; top: 30px; right: 0px; z-index: 3; transform: scaleX(-1); }
+#cloud-cluster img:nth-child(3) { width: 280px; top: 40px; left: 100px; z-index: 4; }
+#cloud-cluster img:nth-child(4) { width: 250px; top: 50px; right: 80px; z-index: 1; }
+#cloud-cluster img:nth-child(5) { width: 300px; top: 10px; left: 60px; z-index: 3; }
+
+#stars-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 14; pointer-events: none; }
+.star {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffffff 0%, #dbeaff 55%, rgba(219,234,255,0) 100%);
+  will-change: opacity, transform;
+}
+
+#cloud1 { left: 10%; top: -68%; z-index: 13; width: 400px; opacity: 0.95; }
+#cloud2 { right: 3%; top: -72%; z-index: 13; width: 430px; transform: scaleX(-1); opacity: 0.95; }
+#cloud3 { left: 14%; top: -63%; z-index: 16; width: 380px; opacity: 0.95; }
+#cloud4 { right: 8%; top: -67%; z-index: 17; width: 360px; opacity: 0.95; }
+#cloud5 { left: 1%; top: -71%; z-index: 14; width: 260px; opacity: 0.92; }
+#cloud6 { left: 26%; top: -64%; z-index: 18; width: 350px; opacity: 0.95; }
+#cloud7 { right: 26%; top: -64%; z-index: 19; width: 370px; transform: scaleX(-1); opacity: 0.95; }
+
+/* =====================================================================
+   CHAPTER 2 — THE BIRTHDAY WISH
+   ===================================================================== */
+
+#chapter2-container {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 200;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+#ch2-particle-canvas {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  z-index: 201;
+}
+
+#ch2-golden-light {
+  position: fixed; top: 50%; left: 50%;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  /* Base gradient uses Ghost White and Alice Blue */
+  background: radial-gradient(circle, #ffffff 0%, #F8F8FF 30%, #E8F4FF 65%, transparent 100%);
+  /* Base glow matches the new colors */
+  box-shadow: 0 0 30px 10px rgba(248, 248, 255, 0.85), 0 0 90px 34px rgba(232, 244, 255, 0.5);
+  z-index: 210;
+  opacity: 0;
+  transform: translate(-50%, -50%);
+  will-change: transform, opacity;
+}
+
+#ch2-golden-rays {
+  position: fixed; top: 50%; left: 50%;
+  width: 60vmax; height: 60vmax;
+  transform: translate(-50%, -50%);
+  /* Rays match the new colors */
+  background: radial-gradient(circle, rgba(248, 248, 255, 0.55) 0%, rgba(232, 244, 255, 0.18) 38%, transparent 68%);
+  z-index: 205;
+  opacity: 0;
+  will-change: opacity, transform;
+}
+
+
+#ch2-butterfly-wrapper {
+  position: fixed; top: 50%; left: 50%;
+  width: 30vw; max-width: 130px; min-width: 70px;
+  aspect-ratio: 1 / 1;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 220;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+#ch2-butterfly {
+  width: 100%; height: auto; object-fit: contain;
+  filter: drop-shadow(0 0 18px #ffd27a) drop-shadow(0 0 30px rgba(255, 160, 80, 0.6));
+  animation: wingFlap 0.25s infinite alternate ease-in-out;
+}
+
+#ch2-name-text {
+  position: fixed; top: 60%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'Great Vibes', cursive;
+  font-size: clamp(2.1rem, 9vw, 4rem);
+  color: #ffddef;
+  text-shadow: 0 0 14px #ff69b4, 0 0 30px #ff1493;
+  z-index: 215;
+  white-space: nowrap;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+#ch2-swarm-container {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+}
+.ch2-mini-butterfly {
+  position: absolute; top: 0; left: 0;
+  filter: drop-shadow(0 0 8px rgba(255, 180, 220, 0.7));
+  animation: wingFlap 0.25s infinite alternate ease-in-out;
+  will-change: transform, opacity;
+}
+
+#ch2-greeting {
+  position: fixed; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 217;
+  opacity: 0;
+  pointer-events: none;
+  width: 88vw;
+}
+#ch2-greeting-line1, #ch2-greeting-line2 {
+  font-family: 'Great Vibes', cursive;
+  color: #fff3da;
+  text-shadow: 0 0 20px rgba(255, 214, 140, 0.9), 0 0 42px rgba(255, 105, 180, 0.55);
+  opacity: 0;
+  margin: 0;
+}
+#ch2-greeting-line1 { font-size: clamp(1.5rem, 6vw, 2.6rem); margin-bottom: 0.15em; }
+#ch2-greeting-line2 { font-size: clamp(2.1rem, 9vw, 4rem); }
+
+#ch2-hearts-container, #ch2-sparkles-container {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  z-index: 216; pointer-events: none;
+}
+.ch2-drift-heart {
+  position: absolute; top: 0; left: 0;
+  font-size: clamp(1rem, 3.4vw, 1.6rem);
+  filter: drop-shadow(0 0 8px rgba(255, 120, 180, 0.7));
+}
+.ch2-sparkle {
+  position: absolute; top: 0; left: 0;
+  width: 6px; height: 6px;
+  background: radial-gradient(circle, #ffffff 0%, #ffd27a 60%, transparent 100%);
+  border-radius: 50%;
+  box-shadow: 0 0 10px 3px rgba(255, 210, 140, 0.85);
+}
+
+/* =====================================================================
+   CHAPTER 2 — SCENES 9-13: MAGICAL COMET, CAMERA DRIFT & FINAL INVITATION
+   ===================================================================== */
+
+#ch2-comet-wrapper {
+  position: fixed; top: 50%; left: 50%;
+  width: 22px; height: 22px;
+  z-index: 230;
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+#ch2-comet-core {
+  width: 100%; height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffffff 0%, #eaf6ff 35%, #bcdfff 62%, rgba(180,220,255,0) 100%);
+  box-shadow:
+    0 0 18px 6px rgba(255,255,255,0.95),
+    0 0 42px 16px rgba(160,210,255,0.65),
+    0 0 84px 30px rgba(140,190,255,0.35);
+}
+
+#ch2-comet-tail {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 140px; height: 5px;
+  transform-origin: left center;
+  transform: translate(-100%, -50%) rotate(150deg);
+  background: linear-gradient(to left, rgba(255,255,255,0.9), rgba(190,225,255,0.4) 55%, transparent 100%);
+  border-radius: 999px;
+  filter: blur(1px);
+}
+
+#ch2-final-message {
+  position: fixed; top: 74%; left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 225;
+  width: 90vw;
+  pointer-events: none;
+}
+#ch2-final-line1, #ch2-final-line2 {
+  font-family: 'Great Vibes', cursive;
+  color: #fff6ec;
+  margin: 0;
+  line-height: 1.35;
+}
+#ch2-final-line1 { font-size: clamp(1.35rem, 5.8vw, 2.2rem); margin-bottom: 0.35em; }
+#ch2-final-line2 { font-size: clamp(1.35rem, 5.8vw, 2.2rem); }
+.ch2-word {
+  display: inline-block;
+  opacity: 0;
+  text-shadow: 0 0 14px rgba(255, 214, 160, 0.9), 0 0 30px rgba(255, 130, 190, 0.55);
+}
+
+#ch2-cta-button {
+  position: fixed; top: 0; left: 0;
+  z-index: 226;
+  opacity: 0;
+  font-family: 'Great Vibes', cursive;
+  font-size: clamp(1.2rem, 5.2vw, 1.75rem);
+  color: #fff2f8;
+  background: linear-gradient(135deg, rgba(255,105,180,0.35), rgba(255,255,255,0.15));
+  border: 1px solid rgba(255,255,255,0.7);
+  border-radius: 999px;
+  padding: 0.55em 1.5em;
+  box-shadow: 0 0 20px 4px rgba(255,255,255,0.55), 0 0 40px 10px rgba(255,120,190,0.45);
+  cursor: pointer;
+  white-space: nowrap;
+  pointer-events: auto;
+  will-change: transform, opacity, box-shadow;
+}
+
+/* =====================================================================
+   CHAPTER 3 → 4 TRANSITION
+   ===================================================================== */
+#ch3-crystal-layer {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 235;
+  pointer-events: none;
+  overflow: visible;
+}
+.ch3-crystal-shard {
+  position: absolute;
+  top: 0; left: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(255,214,235,0.85) 45%, rgba(255,105,180,0.65) 100%);
+  clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+  box-shadow: 0 0 10px 2px rgba(255,255,255,0.75), 0 0 20px 5px rgba(255,120,190,0.55);
+  will-change: transform, opacity;
+}
+
+/* =====================================================================
+   CHAPTER 4 — placeholder stage. Hidden and non-interactive until
+   chapter4.js reveals it once the Chapter 3 zoom/shatter finishes.
+   ===================================================================== */
+#chapter4-container {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 400;
+  opacity: 0;
+  pointer-events: none;
+  overflow: hidden;
+  background: #000000;
+}
+
+/* =====================================================================
+   CHAPTER 4 — THE FINAL MESSAGE
+   ===================================================================== */
+#ch4-text-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90vw;
+  max-width: 800px;
+  text-align: center;
+  z-index: 410;
+  display: flex;
+  flex-direction: column;
+  gap: 1.8rem; /* Space between paragraphs */
+}
+
+.ch4-paragraph {
+  font-family: 'Great Vibes', cursive;
+  color: #fff2f8;
+  font-size: clamp(1.4rem, 4.5vw, 2.2rem);
+  text-shadow: 0 0 15px rgba(255, 105, 180, 0.8), 0 0 25px rgba(255, 20, 147, 0.5);
+  opacity: 0;
+  margin: 0;
+  line-height: 1.4;
+  will-change: transform, opacity;
+}
