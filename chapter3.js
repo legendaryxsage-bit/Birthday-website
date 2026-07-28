@@ -221,194 +221,131 @@ console.log("✅ SUCCESS: chapter3.js has loaded into the browser!");
   });
 
     function startDisintegrationTransition() {
-    const rect = ctaButton.getBoundingClientRect();
-    const cx = rect.left + rect.width / 2;
-    const cy = rect.top + rect.height / 2;
-
-    const originXPct = (cx / window.innerWidth) * 100;
-    const originYPct = (cy / window.innerHeight) * 100;
-    window.ch2API.container.style.transformOrigin = originXPct + '% ' + originYPct + '%';
-
-    const appContainerEl = document.getElementById('app-container');
-    if (appContainerEl) {
-      appContainerEl.style.transformOrigin = originXPct + '% ' + originYPct + '%';
-    }
-
-    shatterIntoCrystals(ctaButton, cx, cy);
-
-    let zoomTl = gsap.timeline({
-      onComplete: () => {
-        if (typeof window.startChapter4 === 'function') {
-          window.startChapter4();
-        } else {
-          console.warn('[Chapter 3] window.startChapter4 is not defined yet — did chapter4.js load?');
-        }
-      }
+    // 1. Blow the button away smoothly in the wind
+    gsap.to(ctaButton, {
+      x: "+=150",
+      opacity: 0,
+      rotation: 45,
+      duration: 0.8,
+      ease: "power2.in",
+      force3D: true
     });
-    
-    // 👇 FIX 1: Lower the Chapter 2 container scale from 4.5 to 2.5 to save GPU memory
-    zoomTl.to(window.ch2API.container, { scale: 2.5, duration: 2.5, ease: "power2.inOut", force3D: true });
 
-    if (typeof window.pushChapter1CameraZoom === 'function') {
-      // 👇 FIX 2: Lowered the background zoom from 12x to 3x! 
-      window.pushChapter1CameraZoom(3, 2.5, "power2.inOut");
-    }
-
-    // 👇 FIX 3: Rapidly fade out all the heavy background PNGs immediately when the button is clicked
-    // so the phone's GPU doesn't have to calculate massive zooming clouds and forests.
+    // 2. Fade out background elements without heavy camera zooming
     gsap.to(['#forest-img', '#moon', '.asset-img', '#stars-container'], {
       opacity: 0,
-      duration: 1.0,
-      ease: "power2.out"
+      x: "+=50",
+      duration: 1.5,
+      ease: "power2.inOut",
+      force3D: true
     });
 
-    // The white flash stays the same
-    gsap.delayedCall(1.8, () => {
+    // 3. SHATTER THE TEXT: Blow the greeting and lower messages away
+    // We target the top lines and the individual words (.ch2-word) of the bottom lines
+    gsap.to(['#ch2-greeting-line1', '#ch2-greeting-line2', '.ch2-word'], {
+      x: () => "+=" + (150 + Math.random() * 200), // Random fly distance right
+      y: () => (Math.random() - 0.5) * 150,        // Scatter randomly up and down
+      rotation: () => (Math.random() - 0.5) * 80,  // Spin in the wind
+      opacity: 0,
+      scale: 0.4,                                  // Shrink as they blow away
+      duration: 0.9,
+      delay: 0.2,                                  // 👇 The exactly requested 0.2s delay!
+      ease: "power2.in",
+      stagger: 0.03,                               // Breaks them apart sequentially
+      force3D: true
+    });
+
+    // 4. Trigger the lightweight wind sweep animation
+    createWindSweep();
+
+    // 5. White flash overlay & Chapter 4 trigger
+    gsap.delayedCall(1.2, () => {
       const flashEl = document.getElementById('flash-overlay');
       if (!flashEl) return;
+
       gsap.to(flashEl, {
-        opacity: 1, duration: 0.4, ease: "power1.in",
-        onComplete: () => gsap.to(flashEl, { opacity: 0, duration: 0.8, ease: "power1.out" })
+        opacity: 1, 
+        duration: 0.4, 
+        ease: "power1.in",
+        onComplete: () => {
+          if (typeof window.startChapter4 === 'function') {
+            window.startChapter4();
+          } else {
+            console.warn('[Chapter 3] window.startChapter4 is not defined.');
+          }
+          
+          gsap.to(flashEl, { opacity: 0, duration: 1.2, ease: "power1.out", delay: 0.2 });
+        }
       });
     });
+  }
 
-    
-    zoomTl.to(window.ch2API.container, { scale: 4.5, duration: 2.9, ease: "power2.inOut", force3D: true });
 
-    if (typeof window.pushChapter1CameraZoom === 'function') {
-      window.pushChapter1CameraZoom(12, 2.9, "power2.inOut");
+  function createWindSweep() {
+    const layer = document.createElement('div');
+    layer.style.position = 'fixed';
+    layer.style.top = '0';
+    layer.style.left = '0';
+    layer.style.width = '100%';
+    layer.style.height = '100%';
+    layer.style.pointerEvents = 'none';
+    layer.style.zIndex = '300';
+    layer.style.overflow = 'hidden';
+    document.body.appendChild(layer);
+
+    // 35 lightweight CSS petals
+    for (let i = 0; i < 35; i++) {
+      const petal = document.createElement('div');
+      petal.style.position = 'absolute';
+      petal.style.left = '-10%';
+      petal.style.top = Math.random() * 100 + '%';
+      
+      const size = 8 + Math.random() * 10;
+      petal.style.width = size + 'px';
+      petal.style.height = (size * 1.5) + 'px';
+      petal.style.background = Math.random() > 0.4 ? '#ffb7c5' : '#ffffff';
+      
+      petal.style.borderRadius = '50% 0 50% 0';
+      petal.style.boxShadow = '0 0 6px rgba(255, 183, 197, 0.5)';
+      petal.style.opacity = '0.85';
+      petal.style.willChange = 'transform';
+
+      layer.appendChild(petal);
+
+      gsap.to(petal, {
+        x: window.innerWidth + 200, 
+        y: `+=${(Math.random() - 0.5) * 150}`, 
+        rotation: Math.random() * 500, 
+        duration: 0.7 + Math.random() * 0.7,
+        delay: Math.random() * 0.4,
+        ease: "power1.inOut",
+        force3D: true
+      });
     }
 
-    const frontClouds = ['cloud3', 'cloud4', 'cloud6', 'cloud7']
-      .map(id => document.getElementById(id))
-      .filter(Boolean);
+    // 8 glowing light streaks
+    for (let i = 0; i < 8; i++) {
+      const streak = document.createElement('div');
+      streak.style.position = 'absolute';
+      streak.style.left = '-20%';
+      streak.style.top = Math.random() * 100 + '%';
+      streak.style.width = (60 + Math.random() * 150) + 'px';
+      streak.style.height = (1 + Math.random() * 2) + 'px';
+      streak.style.background = 'linear-gradient(90deg, transparent, rgba(255,255,255,0.9), transparent)';
+      streak.style.willChange = 'transform';
+      
+      layer.appendChild(streak);
 
-    frontClouds.forEach((cloud, i) => {
-      gsap.to(cloud, {
-        scale: 2.6 + Math.random() * 0.6,
-        x: "+=" + Math.round((Math.random() - 0.5) * 260),
-        y: "-=" + Math.round(80 + Math.random() * 60),
-        opacity: 0,
-        duration: 2.5 + Math.random() * 0.3,
-        delay: 0.15 + i * 0.05,
+      gsap.to(streak, {
+        x: window.innerWidth + 400,
+        duration: 0.4 + Math.random() * 0.4,
+        delay: Math.random() * 0.3,
         ease: "power2.in",
         force3D: true
       });
-    });
+    }
 
-    gsap.delayedCall(2.5, () => {
-      const flashEl = document.getElementById('flash-overlay');
-      if (!flashEl) return;
-      gsap.to(flashEl, {
-        opacity: 1, duration: 0.3, ease: "power1.in",
-        onComplete: () => gsap.to(flashEl, { opacity: 0, duration: 0.6, ease: "power1.out" })
-      });
-    });
+    gsap.delayedCall(2.0, () => layer.remove());
   }
 
-  function shatterIntoCrystals(el, originX, originY) {
-    const rect = el.getBoundingClientRect();
-
-    const layer = document.createElement('div');
-    layer.id = 'ch3-crystal-layer';
-
-    const fragment = document.createDocumentFragment();
-
-    gsap.to(el, { opacity: 0, duration: 0.12, ease: "power1.in" });
-
-    // 👇 OPTIMIZATION 1: Reduced shard grid from 7x4 to 5x3 to cut out lag (15 shards instead of 28)
-    const cols = 5;
-    const rows = 3;
-    const shardW = rect.width / cols;
-    const shardH = rect.height / rows;
-
-    for (let r = 0; r < rows; r++) {
-      for (let c = 0; c < cols; c++) {
-        const shard = document.createElement('div');
-        shard.className = 'ch3-crystal-shard';
-
-        const w = shardW * (0.65 + Math.random() * 0.55);
-        const h = shardH * (0.65 + Math.random() * 0.55);
-        shard.style.width = w + 'px';
-        shard.style.height = h + 'px';
-        shard.style.left = (rect.left + c * shardW + (shardW - w) / 2) + 'px';
-        shard.style.top = (rect.top + r * shardH + (shardH - h) / 2) + 'px';
-        shard.style.willChange = 'transform, opacity'; // GPU hint
-
-        fragment.appendChild(shard);
-
-        const shardCx = rect.left + (c + 0.5) * shardW;
-        const shardCy = rect.top + (r + 0.5) * shardH;
-        let angle = Math.atan2(shardCy - originY, shardCx - originX);
-        if (!isFinite(angle)) angle = Math.random() * Math.PI * 2;
-        angle += (Math.random() - 0.5) * 0.6;
-
-        const dist = 60 + Math.random() * 200;
-        const dx = Math.cos(angle) * dist;
-        const dy = Math.sin(angle) * dist - 30;
-
-        gsap.to(shard, {
-          x: dx,
-          y: dy,
-          rotation: (Math.random() - 0.5) * 480,
-          opacity: 0,
-          // 👇 OPTIMIZATION 2: Lowered scale. (The camera zooming in 4.5x makes this huge naturally)
-          scale: 1.5 + Math.random() * 1.5, 
-          duration: 2.3 + Math.random() * 0.5,
-          delay: (dist / 250) * 0.1,
-          ease: "power2.in", 
-          force3D: true
-        });
-      }
-    }
-
-    const flowerEmojis = ['🏵️', '🌼', '💮'];
-    // 👇 OPTIMIZATION 3: Reduced flower count from 18 to 12
-    for (let i = 0; i < 12; i++) {
-      const flower = document.createElement('div');
-      flower.textContent = flowerEmojis[Math.floor(Math.random() * flowerEmojis.length)];
-      flower.style.position = 'absolute';
-      flower.style.left = originX + 'px';
-      flower.style.top = originY + 'px';
-      flower.style.transform = 'translate(-50%, -50%)'; 
-      flower.style.fontSize = (18 + Math.random() * 12) + 'px';
-      flower.style.zIndex = 250; 
-      flower.style.willChange = 'transform, opacity'; // GPU hint to prevent lag
-      
-      fragment.appendChild(flower);
-
-      let angle = Math.random() * Math.PI * 2;
-      let dist = 100 + Math.random() * 350; 
-      let dx = Math.cos(angle) * dist;
-      let dy = Math.sin(angle) * dist;
-
-      gsap.fromTo(flower, 
-        { x: 0, y: 0, scale: 0, opacity: 1, rotation: Math.random() * 360 },
-        {
-          x: dx,
-          y: dy,
-          // 👇 OPTIMIZATION 4: Realistic scale limit. Combined with the 4.5x camera zoom, 
-          // they effectively hit 13x - 22x scale, which is perfect and entirely lag-free.
-          scale: 3 + Math.random() * 2, 
-          rotation: "+=" + ((Math.random() - 0.5) * 360),
-          opacity: 0, 
-          duration: 2.4 + Math.random() * 0.5,
-          ease: "power2.in", 
-          force3D: true
-        }
-      );
-    }
-
-    layer.appendChild(fragment);
-    window.ch2API.container.appendChild(layer);
-
-    for (let i = 0; i < 20; i++) {
-      window.ch2API.spawnGoldParticle(
-        originX, originY,
-        { spread: 60, vy: (Math.random() - 0.5) * 14, life: 1.1, size: 1.2 + Math.random() * 1.8, color: '255,220,240' }
-      );
-    }
-
-    gsap.delayedCall(3.1, () => layer.remove());
-  }
 })();

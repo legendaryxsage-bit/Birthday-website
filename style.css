@@ -324,41 +324,87 @@ canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index
    CHAPTER 4 — placeholder stage. Hidden and non-interactive until
    chapter4.js reveals it once the Chapter 3 zoom/shatter finishes.
    ===================================================================== */
-#chapter4-container {
-  position: fixed;
+#ch4-master-container {
+  position: absolute;
   top: 0; left: 0;
   width: 100%; height: 100%;
-  z-index: 400;
-  opacity: 0;
-  pointer-events: none;
-  overflow: hidden;
-  background: #000000;
+  z-index: 410;
 }
 
-/* =====================================================================
-   CHAPTER 4 — THE FINAL MESSAGE
-   ===================================================================== */
-#ch4-text-container {
+.ch4-scene {
   position: absolute;
-  top: 50%;
-  left: 50%;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  opacity: 0; /* Hidden by default, JS will crossfade them */
+  overflow: hidden;
+}
+
+.ch4-bg {
+  /* 👇 Made 120% larger so the camera has room to pan without showing borders! */
+  position: absolute;
+  top: -10%; left: -10%;
+  width: 120%; height: 120%;
+  background-size: cover;
+  background-position: center;
+  will-change: transform;
+}
+
+.ch4-text-wrap {
+  position: absolute;
+  top: 50%; left: 50%;
   transform: translate(-50%, -50%);
   width: 90vw;
-  max-width: 800px;
+  max-width: 600px;
+  z-index: 10;
   text-align: center;
-  z-index: 410;
-  display: flex;
-  flex-direction: column;
-  gap: 1.8rem; /* Space between paragraphs */
+  opacity: 0;
+  will-change: transform, opacity;
 }
 
 .ch4-paragraph {
-  font-family: 'Great Vibes', cursive;
-  color: #fff2f8;
-  font-size: clamp(1.4rem, 4.5vw, 2.2rem);
-  text-shadow: 0 0 15px rgba(255, 105, 180, 0.8), 0 0 25px rgba(255, 20, 147, 0.5);
-  opacity: 0;
+  font-family: 'Caveat', cursive;
+  font-weight: 700;
+  font-size: clamp(1.6rem, 7vw, 2.5rem);
   margin: 0;
-  line-height: 1.4;
+  line-height: 1.3;
+}
+
+/* Background Images & Text Colors */
+.ch4-bg-1 { background-image: url('bg1.png'); }
+.ch4-scene-1 .ch4-paragraph { color: #ffffff; text-shadow: 0 0 10px rgba(0,0,0,0.9), 0 0 20px rgba(20,0,40,0.8); }
+
+.ch4-bg-2 { background-image: url('bg2.png'); }
+.ch4-scene-2 .ch4-paragraph { color: #fffdf0; text-shadow: 0 0 10px rgba(0,0,0,0.9), 0 0 20px rgba(80,0,0,0.9); }
+
+.ch4-bg-3 { background-image: url('bg3.png'); }
+.ch4-scene-3 .ch4-paragraph { color: #ffeef6; text-shadow: 0 0 10px rgba(0,0,0,0.9), 0 0 20px rgba(40,0,50,0.9); }
+
+.ch4-bg-4 { background-image: url('bg4.png'); }
+.ch4-scene-4 .ch4-paragraph { color: #ffffff; text-shadow: 0 0 10px rgba(0,0,0,0.9), 0 0 20px rgba(120,0,80,0.9); }
+
+
+/* ==============================================
+   CHAPTER 4 — INTERACTIVE NEXT BUTTON
+   ============================================== */
+#ch4-next-btn {
+  position: absolute;
+  bottom: 6%;
+  right: 6%;
+  z-index: 500;
+  font-family: 'Caveat', cursive;
+  font-weight: 700;
+  font-size: clamp(1.8rem, 6vw, 2.5rem);
+  color: #ffffff;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 50px;
+  padding: 8px 24px;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  text-shadow: 0 0 10px rgba(0,0,0,0.9);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
   will-change: transform, opacity;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }

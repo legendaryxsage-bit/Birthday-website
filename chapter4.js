@@ -46,53 +46,110 @@ console.log("✅ SUCCESS: chapter4.js has loaded into the browser!");
   // -------------------------------------------------------------------
   // Scene 1 — The Message
   // -------------------------------------------------------------------
-  function scene1Chapter4() {
-    // 1. Build the text container
-    const textContainer = document.createElement('div');
-    textContainer.id = 'ch4-text-container';
-    chapter4Container.appendChild(textContainer);
+    function scene1Chapter4() {
+    const masterContainer = document.createElement('div');
+    masterContainer.id = 'ch4-master-container';
+    chapter4Container.appendChild(masterContainer);
 
-    // 2. Build the paragraphs and add them to the screen (invisible at first)
-    const domParas = messageParagraphs.map(text => {
+    const cameraDirections = [
+      { scale: 1.15, x: "-6%", y: "0%" },   // 1. Right + Forward
+      { scale: 1.15, x: "6%", y: "6%" },    // 2. Left + Forward + Upward
+      { scale: 1.15, x: "-6%", y: "-6%" },  // 3. Right + Forward + Lower
+      { scale: 1.20, x: "0%", y: "0%" }     // 4. Center intense zoom
+    ];
+
+    // Build all scenes initially (hidden)
+    messageParagraphs.forEach((text, index) => {
+      const scene = document.createElement('div');
+      scene.className = `ch4-scene ch4-scene-${index + 1}`;
+      
+      const bg = document.createElement('div');
+      bg.className = `ch4-bg ch4-bg-${index + 1}`;
+      
+      const textWrap = document.createElement('div');
+      textWrap.className = 'ch4-text-wrap';
+      
       const p = document.createElement('p');
       p.className = 'ch4-paragraph';
       p.textContent = text;
-      textContainer.appendChild(p);
-      return p;
-    });
-
-    // 3. Animate the paragraphs one by one
-    let tl = gsap.timeline();
-
-    // Wait 1.5 seconds after the flash fades away before showing the first text
-    tl.to({}, { duration: 1.5 });
-
-    domParas.forEach((p, index) => {
-      // Float up and fade in smoothly
-      tl.fromTo(p, 
-        { opacity: 0, y: 40, scale: 0.95 },
-        { opacity: 1, y: 0, scale: 1, duration: 2.5, ease: "power2.out", force3D: true }
-      );
       
-      // Pause so the reader has time to read the paragraph before the next one appears
-      // (The second paragraph is longer, so it gets a 4.5s pause instead of 3.0s)
-      const readTime = index === 1 ? 4.5 : 3.0; 
-      tl.to({}, { duration: readTime });
+      textWrap.appendChild(p);
+      scene.appendChild(bg);
+      scene.appendChild(textWrap);
+      masterContainer.appendChild(scene);
     });
 
-    // 4. Once all text is on screen, give it a subtle, continuous "living" float
-    tl.call(() => {
-      domParas.forEach((p, i) => {
-        gsap.to(p, {
-          y: "-=8",
-          duration: 2.5 + Math.random(),
-          yoyo: true,
-          repeat: -1,
-          ease: "sine.inOut",
-          delay: i * 0.3,
-          force3D: true
-        });
+    // Create the Next button
+    const nextBtn = document.createElement('div');
+    nextBtn.id = 'ch4-next-btn';
+    nextBtn.textContent = 'Next ➔';
+    chapter4Container.appendChild(nextBtn);
+
+    let currentStep = 0;
+
+    // Function to play a specific scene
+    function showScene(stepIndex) {
+      const scene = document.querySelector(`.ch4-scene-${stepIndex + 1}`);
+      const bg = scene.querySelector('.ch4-bg');
+      const textWrap = scene.querySelector('.ch4-text-wrap');
+      const cam = cameraDirections[stepIndex];
+
+      // Fade in the new scene over the old one
+      gsap.to(scene, { opacity: 1, duration: 1.5, ease: "sine.inOut" });
+
+      // Start a very slow, continuous camera pan (20 seconds so it keeps moving while she reads)
+      gsap.to(bg, { 
+        scale: cam.scale, x: cam.x, y: cam.y, 
+        duration: 20, ease: "power1.out", force3D: true 
       });
+
+      // Float the text in gently
+      gsap.fromTo(textWrap, 
+        { opacity: 0, y: 30 }, 
+        { opacity: 1, y: 0, duration: 2, ease: "power2.out", delay: 0.5, force3D: true }
+      );
+
+      // Manage the Next Button
+      if (stepIndex < messageParagraphs.length - 1) {
+        // Show the button after 2.5 seconds (gives her time to start reading)
+        gsap.to(nextBtn, { 
+          opacity: 1, 
+          duration: 1, 
+          delay: 2.5, 
+          onComplete: () => { nextBtn.style.pointerEvents = 'auto'; } 
+        });
+        
+        // Make the button pulse slightly so she knows to click it
+        gsap.to(nextBtn, { scale: 1.05, duration: 1, yoyo: true, repeat: -1, ease: "sine.inOut", delay: 2.5 });
+      } else {
+        // If it's the final paragraph, add the floating breathing effect to the text instead
+        gsap.to(textWrap, { y: "-=10", duration: 2.5, yoyo: true, repeat: -1, ease: "sine.inOut", delay: 2.5 });
+      }
+    }
+
+    // Button Click Event
+    nextBtn.addEventListener('click', () => {
+      // Instantly disable the button so she can't double-click
+      nextBtn.style.pointerEvents = 'none';
+      
+      // Hide the button and stop its pulsing
+      gsap.killTweensOf(nextBtn, "scale");
+      gsap.to(nextBtn, { opacity: 0, scale: 1, duration: 0.5 });
+
+      // Fade out the current text upward
+      const oldText = document.querySelector(`.ch4-scene-${currentStep + 1} .ch4-text-wrap`);
+      gsap.to(oldText, { opacity: 0, y: -20, duration: 1, ease: "power2.in" });
+
+      // Advance to the next step after the text fades out
+      currentStep++;
+      gsap.delayedCall(0.8, () => {
+        showScene(currentStep);
+      });
+    });
+
+    // Start the first scene after a short delay (waiting for the Chapter 3 white flash to settle)
+    gsap.delayedCall(1.5, () => {
+      showScene(0);
     });
   }
 
