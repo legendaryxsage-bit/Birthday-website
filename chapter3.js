@@ -13,7 +13,6 @@ console.log("✅ SUCCESS: chapter3.js has loaded into the browser!");
   let cinematicStarted = false;
   let greetingVisibleTimer = null;
 
-  // Watcher: Waits until the Chapter 2 greeting is at 95% opacity, then waits 3 seconds.
   function watchForGreeting() {
     if (cinematicStarted) return;
     
@@ -38,18 +37,14 @@ console.log("✅ SUCCESS: chapter3.js has loaded into the browser!");
   }
   gsap.ticker.add(watchForGreeting);
 
-  // Manual trigger for Chapter 3!
   window.skipToChapter3 = function() {
     if (cinematicStarted) return;
     cinematicStarted = true;
     console.log('[Chapter 3] MANUALLY TRIGGERED!');
-    window.ch2API.container.style.pointerEvents = 'auto'; // Ensure screen is clickable
+    window.ch2API.container.style.pointerEvents = 'auto';
     scene9MagicalComet();
   };
 
-  // -------------------------------------------------------------------
-  // Scene 9 — Magical Comet
-  // -------------------------------------------------------------------
   function scene9MagicalComet() {
     gsap.set(cometWrapper, {
       xPercent: -50, yPercent: -50,
@@ -90,9 +85,6 @@ console.log("✅ SUCCESS: chapter3.js has loaded into the browser!");
     }, null, "-=0.3");
   }
 
-  // -------------------------------------------------------------------
-  // Scene 10 — Camera Movement
-  // -------------------------------------------------------------------
   function scene10CameraMove() {
     const shiftY = Math.round(window.innerHeight * 0.20);
 
@@ -139,9 +131,6 @@ console.log("✅ SUCCESS: chapter3.js has loaded into the browser!");
     });
   }
 
-  // -------------------------------------------------------------------
-  // Scene 13 — Button Reveal & Butterfly Interaction
-  // -------------------------------------------------------------------
   function scene13ButtonReveal() {
     ctaButton.textContent = "💖✨ Yes, Take Me There😘🌸";
     ctaButton.style.pointerEvents = 'auto';
@@ -216,10 +205,6 @@ console.log("✅ SUCCESS: chapter3.js has loaded into the browser!");
     });
   }
 
-  // -------------------------------------------------------------------
-  // Scene 15 — Button touched: disintegrate into crystal shards while
-  // the camera zooms in on the touch point, then hand off to Chapter 4.
-  // -------------------------------------------------------------------
   let transitionStarted = false;
 
   ctaButton.addEventListener('click', () => {
@@ -235,7 +220,7 @@ console.log("✅ SUCCESS: chapter3.js has loaded into the browser!");
     startDisintegrationTransition();
   });
 
-  function startDisintegrationTransition() {
+    function startDisintegrationTransition() {
     const rect = ctaButton.getBoundingClientRect();
     const cx = rect.left + rect.width / 2;
     const cy = rect.top + rect.height / 2;
@@ -261,11 +246,36 @@ console.log("✅ SUCCESS: chapter3.js has loaded into the browser!");
       }
     });
     
-    // 👇 The smooth, gliding zoom fix is here
+    // 👇 FIX 1: Lower the Chapter 2 container scale from 4.5 to 2.5 to save GPU memory
+    zoomTl.to(window.ch2API.container, { scale: 2.5, duration: 2.5, ease: "power2.inOut", force3D: true });
+
+    if (typeof window.pushChapter1CameraZoom === 'function') {
+      // 👇 FIX 2: Lowered the background zoom from 12x to 3x! 
+      window.pushChapter1CameraZoom(3, 2.5, "power2.inOut");
+    }
+
+    // 👇 FIX 3: Rapidly fade out all the heavy background PNGs immediately when the button is clicked
+    // so the phone's GPU doesn't have to calculate massive zooming clouds and forests.
+    gsap.to(['#forest-img', '#moon', '.asset-img', '#stars-container'], {
+      opacity: 0,
+      duration: 1.0,
+      ease: "power2.out"
+    });
+
+    // The white flash stays the same
+    gsap.delayedCall(1.8, () => {
+      const flashEl = document.getElementById('flash-overlay');
+      if (!flashEl) return;
+      gsap.to(flashEl, {
+        opacity: 1, duration: 0.4, ease: "power1.in",
+        onComplete: () => gsap.to(flashEl, { opacity: 0, duration: 0.8, ease: "power1.out" })
+      });
+    });
+
+    
     zoomTl.to(window.ch2API.container, { scale: 4.5, duration: 2.9, ease: "power2.inOut", force3D: true });
 
     if (typeof window.pushChapter1CameraZoom === 'function') {
-      // 👇 Smooth background zoom sync
       window.pushChapter1CameraZoom(12, 2.9, "power2.inOut");
     }
 
@@ -306,8 +316,9 @@ console.log("✅ SUCCESS: chapter3.js has loaded into the browser!");
 
     gsap.to(el, { opacity: 0, duration: 0.12, ease: "power1.in" });
 
-    const cols = 7;
-    const rows = 4;
+    // 👇 OPTIMIZATION 1: Reduced shard grid from 7x4 to 5x3 to cut out lag (15 shards instead of 28)
+    const cols = 5;
+    const rows = 3;
     const shardW = rect.width / cols;
     const shardH = rect.height / rows;
 
@@ -322,6 +333,7 @@ console.log("✅ SUCCESS: chapter3.js has loaded into the browser!");
         shard.style.height = h + 'px';
         shard.style.left = (rect.left + c * shardW + (shardW - w) / 2) + 'px';
         shard.style.top = (rect.top + r * shardH + (shardH - h) / 2) + 'px';
+        shard.style.willChange = 'transform, opacity'; // GPU hint
 
         fragment.appendChild(shard);
 
@@ -331,7 +343,7 @@ console.log("✅ SUCCESS: chapter3.js has loaded into the browser!");
         if (!isFinite(angle)) angle = Math.random() * Math.PI * 2;
         angle += (Math.random() - 0.5) * 0.6;
 
-        const dist = 40 + Math.random() * 150;
+        const dist = 60 + Math.random() * 200;
         const dx = Math.cos(angle) * dist;
         const dy = Math.sin(angle) * dist - 30;
 
@@ -340,13 +352,51 @@ console.log("✅ SUCCESS: chapter3.js has loaded into the browser!");
           y: dy,
           rotation: (Math.random() - 0.5) * 480,
           opacity: 0,
-          scale: 0.15 + Math.random() * 0.35,
-          duration: 2.1 + Math.random() * 0.5,
-          delay: (dist / 190) * 0.12 + Math.random() * 0.08,
-          ease: "power1.out",
+          // 👇 OPTIMIZATION 2: Lowered scale. (The camera zooming in 4.5x makes this huge naturally)
+          scale: 1.5 + Math.random() * 1.5, 
+          duration: 2.3 + Math.random() * 0.5,
+          delay: (dist / 250) * 0.1,
+          ease: "power2.in", 
           force3D: true
         });
       }
+    }
+
+    const flowerEmojis = ['🏵️', '🌼', '💮'];
+    // 👇 OPTIMIZATION 3: Reduced flower count from 18 to 12
+    for (let i = 0; i < 12; i++) {
+      const flower = document.createElement('div');
+      flower.textContent = flowerEmojis[Math.floor(Math.random() * flowerEmojis.length)];
+      flower.style.position = 'absolute';
+      flower.style.left = originX + 'px';
+      flower.style.top = originY + 'px';
+      flower.style.transform = 'translate(-50%, -50%)'; 
+      flower.style.fontSize = (18 + Math.random() * 12) + 'px';
+      flower.style.zIndex = 250; 
+      flower.style.willChange = 'transform, opacity'; // GPU hint to prevent lag
+      
+      fragment.appendChild(flower);
+
+      let angle = Math.random() * Math.PI * 2;
+      let dist = 100 + Math.random() * 350; 
+      let dx = Math.cos(angle) * dist;
+      let dy = Math.sin(angle) * dist;
+
+      gsap.fromTo(flower, 
+        { x: 0, y: 0, scale: 0, opacity: 1, rotation: Math.random() * 360 },
+        {
+          x: dx,
+          y: dy,
+          // 👇 OPTIMIZATION 4: Realistic scale limit. Combined with the 4.5x camera zoom, 
+          // they effectively hit 13x - 22x scale, which is perfect and entirely lag-free.
+          scale: 3 + Math.random() * 2, 
+          rotation: "+=" + ((Math.random() - 0.5) * 360),
+          opacity: 0, 
+          duration: 2.4 + Math.random() * 0.5,
+          ease: "power2.in", 
+          force3D: true
+        }
+      );
     }
 
     layer.appendChild(fragment);
@@ -361,5 +411,4 @@ console.log("✅ SUCCESS: chapter3.js has loaded into the browser!");
 
     gsap.delayedCall(3.1, () => layer.remove());
   }
-
 })();

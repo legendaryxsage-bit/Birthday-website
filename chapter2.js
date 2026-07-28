@@ -176,7 +176,8 @@ console.log("✅ SUCCESS: chapter2.js has loaded into the browser!");
     gsap.set(goldenLight, { opacity: 1, scale: 1 });
     gsap.set(goldenRays, { opacity: 1, scale: 0.3 });
 
-    let pulseTl = gsap.timeline({ onComplete: scene3ButterflyReturn });
+    // 👇 ADDED: Gave the timeline an 'id' so we can find it and kill it later
+    let pulseTl = gsap.timeline({ repeat: -1, id: "orbPulse" });
 
     function beatParticles() {
       for (let p = 0; p < 4; p++) {
@@ -184,38 +185,36 @@ console.log("✅ SUCCESS: chapter2.js has loaded into the browser!");
       }
     }
 
-    const beats = 3;
-    for (let i = 0; i < beats; i++) {
-      pulseTl.fromTo(goldenLight, 
-        { scale: 1 }, 
-        {
-          scale: 1.2, 
-          boxShadow: "0 0 40px 15px rgba(248,248,255,0.9), 0 0 100px 40px rgba(232,244,255,0.55)",
-          duration: 0.5, ease: "sine.out"
-        }
-      );
-      pulseTl.fromTo(goldenRays, 
-        { scale: 0.3, opacity: 0.3 }, 
-        { scale: 0.5, opacity: 0.6, duration: 0.5, ease: "sine.out" }, 
-        "<"
-      );
-      
-      pulseTl.call(beatParticles);
-      
-      pulseTl.to(goldenLight, { 
-        scale: 1, 
-        boxShadow: "0 0 30px 10px rgba(248,248,255,0.85), 0 0 90px 34px rgba(232,244,255,0.5)", 
-        duration: 0.4, ease: "sine.inOut" 
-      });
-      pulseTl.to(goldenRays, { scale: 0.3, opacity: 0.3, duration: 0.4, ease: "sine.inOut" }, "<");
-    }
+    pulseTl.fromTo(goldenLight, 
+      { scale: 1 }, 
+      {
+        scale: 1.2, 
+        boxShadow: "0 0 40px 15px rgba(248,248,255,0.9), 0 0 100px 40px rgba(232,244,255,0.55)",
+        duration: 0.5, ease: "sine.out"
+      }
+    );
+    pulseTl.fromTo(goldenRays, 
+      { scale: 0.3, opacity: 0.3 }, 
+      { scale: 0.5, opacity: 0.6, duration: 0.5, ease: "sine.out" }, 
+      "<"
+    );
+    
+    pulseTl.call(beatParticles);
+    
+    pulseTl.to(goldenLight, { 
+      scale: 1, 
+      boxShadow: "0 0 30px 10px rgba(248,248,255,0.85), 0 0 90px 34px rgba(232,244,255,0.5)", 
+      duration: 0.4, ease: "sine.inOut" 
+    });
+    pulseTl.to(goldenRays, { scale: 0.3, opacity: 0.3, duration: 0.4, ease: "sine.inOut" }, "<");
 
-    // 👇 CHANGED: Removed the massive "scale: 26" explosion! 
-    // Now it just gently hovers at a small size for a second before the butterfly appears.
-    pulseTl.to(goldenLight, { scale: 1.1, duration: 1.4, ease: "power2.inOut" });
+    gsap.delayedCall(2.7, scene3ButterflyReturn);
 
+    // 👇 ADDED: Gave the ambient particles an 'id' too
     gsap.to({}, {
+      id: "ambientParticles",
       duration: 3,
+      repeat: -1, 
       onUpdate: function () {
         if (Math.random() < 0.35) {
           spawnGoldParticle(window.innerWidth / 2 + (Math.random() - 0.5) * window.innerWidth * 0.5, window.innerHeight / 2 + (Math.random() - 0.5) * window.innerHeight * 0.5, { vy: -14, life: 1.6, color: '232,244,255' });
@@ -242,7 +241,19 @@ console.log("✅ SUCCESS: chapter2.js has loaded into the browser!");
         }
       }
     }, "<0.1");
-    flightTl.call(() => gsap.to([goldenLight, goldenRays], { opacity: 0, duration: 0.35, ease: "power1.in" }), null, "-=0.35");
+    
+    flightTl.call(() => {
+      // 👇 CHANGED: Now we explicitly kill the invisible timelines so they stop spitting out particles
+      let pTl = gsap.getById("orbPulse");
+      if (pTl) pTl.kill();
+      
+      let aTl = gsap.getById("ambientParticles");
+      if (aTl) aTl.kill();
+      
+      gsap.killTweensOf([goldenLight, goldenRays]);
+      gsap.to([goldenLight, goldenRays], { opacity: 0, duration: 0.35, ease: "power1.in" });
+    }, null, "-=0.35");
+    
     flightTl.to(ch2ButterflyWrap, { y: "+=10", duration: 0.6, yoyo: true, repeat: 1, ease: "sine.inOut" });
   }
 
