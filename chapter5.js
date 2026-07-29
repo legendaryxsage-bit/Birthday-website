@@ -245,6 +245,14 @@ console.log("✅ SUCCESS: chapter5.js has loaded into the browser!");
     tl.call(() => {
       spawnDriftingHearts();
     }, null, 6.4);
+    //Wait ~6 seconds after the final vow appears (6.2s + 5.8s = 12.0s timeline position)
+   tl.call(() => {
+      if (typeof window.startChapter6 === 'function') {
+        window.startChapter6();
+      } else {
+        console.warn('[Chapter 5] startChapter6() is not defined yet.');
+      }
+    }, null, 12.0); 
   }
 
   // A single smoke wisp: drifts up, widens slightly, fades away. Pure
