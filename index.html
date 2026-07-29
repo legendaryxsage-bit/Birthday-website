@@ -87,10 +87,70 @@
   <!-- ===================== CHAPTER 4 ===================== -->
   <div id="chapter4-container"></div>
 
+  <!-- =====================================================================
+       CHAPTER 5 — THE GRAND FINALE
+       ===================================================================== -->
+  <div id="chapter5-container">
+
+    <!-- Subtle dark overlay used to dim the scene the moment the wind hits -->
+    <div id="ch5-darken-overlay"></div>
+
+    <!-- Single canvas powers the ENTIRE fireworks show (see chapter5.js) -->
+    <canvas id="ch5-fireworks-canvas"></canvas>
+
+    <!-- A simple round stand the cake rests on, so it doesn't float -->
+    <div id="ch5-cake-table">
+      <div id="ch5-table-top"></div>
+      <div id="ch5-table-stem"></div>
+      <div id="ch5-table-base"></div>
+    </div>
+
+    <!-- The Cake -->
+    <div id="ch5-cake-wrapper">
+      <!-- 👉 Swap this src for your real cake artwork (transparent PNG works best) -->
+      <img id="ch5-cake-img" src="cake.png" alt="Birthday Cake">
+
+      <!-- Candles sit on top of the cake image, positioned in % so they scale with it -->
+      <div class="ch5-candle" id="ch5-candle-1">
+        <div class="ch5-flame"></div>
+        <div class="ch5-wick"></div>
+      </div>
+      <div class="ch5-candle" id="ch5-candle-2">
+        <div class="ch5-flame"></div>
+        <div class="ch5-wick"></div>
+      </div>
+      <div class="ch5-candle" id="ch5-candle-3">
+        <div class="ch5-flame"></div>
+        <div class="ch5-wick"></div>
+      </div>
+
+      <!-- Smoke wisps — hidden until the candles are blown out -->
+      <div class="ch5-smoke" id="ch5-smoke-1"></div>
+      <div class="ch5-smoke" id="ch5-smoke-2"></div>
+      <div class="ch5-smoke" id="ch5-smoke-3"></div>
+    </div>
+
+    <!-- "Make a wish..." floats above the cake (revealed only after the button is tapped) -->
+    <p id="ch5-wish-text">Make a wish...</p>
+
+    <!-- Bottom button — she taps this once the cake has landed -->
+    <div id="ch5-wish-btn" role="button" tabindex="0">Make a Wish 🎂</div>
+
+    <!-- The final vow — fades in once the fireworks are underway -->
+    <div id="ch5-final-vow">
+      <p id="ch5-final-vow-text">Happy Birthday, My Everything...<br>I Love You, Bittiii&nbsp;💗</p>
+    </div>
+
+    <!-- A small pool of drifting hearts around the final vow -->
+    <div id="ch5-hearts-container"></div>
+
+  </div>
+
   <script src="script.js"></script>
   <script src="chapter2.js"></script>
   <script src="chapter3.js"></script>
   <script src="chapter4.js"></script>
+  <script src="chapter5.js"></script>
   
 </body>
 </html>

@@ -124,6 +124,15 @@ console.log("✅ SUCCESS: chapter4.js has loaded into the browser!");
       } else {
         // If it's the final paragraph, add the floating breathing effect to the text instead
         gsap.to(textWrap, { y: "-=10", duration: 2.5, yoyo: true, repeat: -1, ease: "sine.inOut", delay: 2.5 });
+
+        // Give her time to read the last paragraph, then hand off to the finale.
+        gsap.delayedCall(8, () => {
+          if (typeof window.startChapter5 === 'function') {
+            window.startChapter5();
+          } else {
+            console.warn('[Chapter 4] window.startChapter5 is not defined — is chapter5.js loaded?');
+          }
+        });
       }
     }
 

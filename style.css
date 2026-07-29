@@ -408,3 +408,338 @@ canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
 }
+
+/* =====================================================================
+   CHAPTER 5 — THE GRAND FINALE
+   Append this whole block to the end of style.css
+
+   PERFORMANCE NOTE: every animated DOM element below only ever
+   animates `transform` and `opacity` (never top/left/width/height/
+   box-shadow), so the browser can run these on the compositor thread
+   instead of re-painting layout every frame. `will-change` hints are
+   applied only to the elements that actually move.
+   ===================================================================== */
+
+#chapter5-container {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-image: radial-gradient(ellipse at 50% 30%, rgba(20,0,34,0.55) 0%, rgba(5,0,12,0.75) 65%, rgba(0,0,0,0.85) 100%), url('bg5.png');
+  background-size: cover, cover;
+  background-position: center, center;
+  background-repeat: no-repeat, no-repeat;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 600;
+}
+
+#ch5-darken-overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: #000000;
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity;
+  z-index: 605;
+}
+
+/* Fireworks live entirely on this single canvas */
+#ch5-fireworks-canvas {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 610;
+  pointer-events: none;
+}
+
+/* ---------------------------------------------------------------------
+   THE CAKE STAND — a simple round marble-look plate the cake rests on,
+   so it reads as sitting on something rather than floating in the air.
+   Pure CSS (no extra image asset needed). The `bottom` value below is
+   only a same-frame fallback — chapter5.js measures the cake's real
+   rendered position and overrides it precisely once the cake lands, so
+   the plate always tucks snugly under the cake with no visible gap,
+   regardless of screen size or any transparent padding baked into
+   cake.png itself. Fades out together with the cake later so nothing
+   is left floating alone.
+   --------------------------------------------------------------------- */
+#ch5-cake-table {
+  position: absolute;
+  left: 50%;
+  bottom: calc(22% - 15px);
+  transform: translate3d(-50%, 0, 0);
+  /* Sized close to the cake's own footprint (min(36vw, 200px)) so the cake
+     fits snugly onto the plate with just a thin visible rim, instead of
+     floating in the middle of an oversized saucer. */
+  width: min(39vw, 216px);
+  z-index: 615;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+#ch5-table-top {
+  width: 100%;
+  height: min(6vw, 31px);
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 32%, #fffaf0 0%, #f3e7d0 42%, #dcc59c 74%, #a5824f 100%);
+  box-shadow:
+    inset 0 3px 5px rgba(255, 255, 255, 0.55),
+    inset 0 -8px 12px rgba(0, 0, 0, 0.3),
+    0 14px 22px rgba(0, 0, 0, 0.5);
+}
+
+#ch5-table-stem {
+  width: 50%;
+  height: min(3vw, 16px);
+  margin: -5px auto 0;
+  background: linear-gradient(180deg, #cdb489 0%, #a98a55 70%, #8a6d42 100%);
+  clip-path: polygon(8% 0%, 92% 0%, 68% 100%, 32% 100%);
+}
+
+#ch5-table-base {
+  width: 48%;
+  height: min(2.3vw, 12px);
+  margin: -3px auto 0;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 30%, #e6d3ac 0%, #b9985f 55%, rgba(120, 95, 60, 0.25) 100%);
+}
+
+/* ---------------------------------------------------------------------
+   THE CAKE
+   --------------------------------------------------------------------- */
+#ch5-cake-wrapper {
+  position: absolute;
+  left: 50%;
+  /* Anchored from the bottom so it always lands just above the button,
+     regardless of the cake's rendered height on any given screen. */
+  bottom: 22%;
+  width: min(36vw, 200px);
+  /* A determinate height is essential: the candles below use % top/height,
+     and percentages only resolve correctly against an ancestor whose height
+     isn't purely content-driven. chapter5.js overwrites this ratio with the
+     real cake.png's natural dimensions the instant it loads, so this 4/5
+     value is only a same-frame fallback before that JS runs. */
+  aspect-ratio: 4 / 5;
+  transform: translate3d(-50%, 40vh, 0) scale(0.82);
+  opacity: 0;
+  will-change: transform, opacity;
+  z-index: 620;
+  filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.55));
+}
+
+#ch5-cake-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Candles are positioned as % of the cake wrapper so they scale together */
+.ch5-candle {
+  position: absolute;
+  top: -3%;
+  width: 6px;
+  height: 12%;
+  transform-origin: 50% 100%;
+}
+#ch5-candle-1 { left: 38%; }
+#ch5-candle-2 { left: 50%; margin-left: -3px; }
+#ch5-candle-3 { left: 62%; }
+
+.ch5-wick {
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  width: 2px;
+  height: 6px;
+  transform: translateX(-50%);
+  background: #3a2a1e;
+  border-radius: 1px;
+}
+
+/* The flame: a soft core + a static glow halo (halo never animates,
+   so it costs nothing extra per frame) */
+.ch5-flame {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  width: 10px;
+  height: 18px;
+  transform: translate3d(-50%, 0, 0);
+  transform-origin: 50% 100%;
+  border-radius: 50% 50% 50% 50% / 65% 65% 35% 35%;
+  background: radial-gradient(ellipse at 50% 70%, #fff7d6 0%, #ffd23f 35%, #ff8a00 70%, rgba(255, 90, 0, 0) 100%);
+  will-change: transform, opacity;
+  animation: ch5-flicker 0.45s ease-in-out infinite alternate;
+}
+
+.ch5-flame::before {
+  /* Soft ambient glow — a static blurred halo, not re-rendered per frame */
+  content: "";
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 34px;
+  height: 34px;
+  transform: translate3d(-50%, -50%, 0);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 200, 90, 0.55) 0%, rgba(255, 150, 40, 0) 70%);
+  filter: blur(2px);
+  pointer-events: none;
+}
+
+@keyframes ch5-flicker {
+  0%   { transform: translate3d(-50%, 0, 0) scale(1, 1) rotate(-2deg); opacity: 1; }
+  30%  { transform: translate3d(-50%, 0, 0) scale(0.92, 1.06) rotate(1deg); opacity: 0.9; }
+  60%  { transform: translate3d(-50%, 0, 0) scale(1.05, 0.94) rotate(-1deg); opacity: 1; }
+  100% { transform: translate3d(-50%, 0, 0) scale(0.96, 1.02) rotate(2deg); opacity: 0.85; }
+}
+
+/* Applied the instant the wind sweeps through — flame leans hard and
+   flickers wildly before being extinguished by JS (opacity -> 0) */
+.ch5-flame.ch5-wind-hit {
+  animation: ch5-wind-flicker 0.5s ease-in-out 2;
+}
+
+@keyframes ch5-wind-flicker {
+  0%   { transform: translate3d(-50%, 0, 0) scale(1, 1) rotate(0deg); }
+  20%  { transform: translate3d(-40%, 0, 0) scale(1.3, 0.6) rotate(35deg); opacity: 0.9; }
+  45%  { transform: translate3d(-55%, 0, 0) scale(0.7, 1.2) rotate(-25deg); opacity: 1; }
+  70%  { transform: translate3d(-35%, 0, 0) scale(1.2, 0.5) rotate(45deg); opacity: 0.6; }
+  100% { transform: translate3d(-50%, 0, 0) scale(0.4, 0.3) rotate(60deg); opacity: 0; }
+}
+
+.ch5-flame.ch5-extinguished {
+  animation: none;
+  opacity: 0;
+}
+
+/* ---------------------------------------------------------------------
+   SMOKE — small wisps that drift up from each extinguished wick
+   --------------------------------------------------------------------- */
+.ch5-smoke {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(230, 230, 235, 0.55) 0%, rgba(230, 230, 235, 0) 75%);
+  opacity: 0;
+  transform: translate3d(-50%, 0, 0) scale(1);
+  will-change: transform, opacity;
+  filter: blur(1px);
+  pointer-events: none;
+}
+
+/* ---------------------------------------------------------------------
+   TEXT
+   --------------------------------------------------------------------- */
+#ch5-wish-text {
+  position: absolute;
+  left: 50%;
+  /* Sits high in the sky (near the top of the scene) rather than tracking
+     the cake's height, so it never crowds or overlaps the cake artwork. */
+  top: 14%;
+  transform: translate3d(-50%, 20px, 0);
+  opacity: 0;
+  will-change: transform, opacity;
+  margin: 0;
+  font-family: 'Great Vibes', cursive;
+  font-size: clamp(2rem, 8vw, 3.2rem);
+  color: #ffe9c7;
+  text-shadow: 0 0 12px rgba(255, 200, 120, 0.8), 0 0 30px rgba(255, 150, 60, 0.5);
+  z-index: 625;
+  pointer-events: none;
+  text-align: center;
+}
+
+/* Bottom "Make a Wish" button — appears once the cake has landed */
+#ch5-wish-btn {
+  position: absolute;
+  left: 50%;
+  bottom: 9%;
+  transform: translate3d(-50%, 20px, 0) scale(1);
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform, opacity;
+  z-index: 630;
+  font-family: 'Caveat', cursive;
+  font-weight: 700;
+  font-size: clamp(1.4rem, 5.2vw, 2.2rem);
+  white-space: nowrap;
+  color: #ffffff;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 50px;
+  padding: 8px 24px;
+  cursor: pointer;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+#ch5-final-vow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 88vw;
+  max-width: 640px;
+  transform: translate3d(-50%, -50%, 0) scale(0.9);
+  opacity: 0;
+  will-change: transform, opacity;
+  z-index: 640;
+  text-align: center;
+  pointer-events: none;
+}
+
+#ch5-final-vow-text {
+  margin: 0;
+  font-family: 'Great Vibes', cursive;
+  font-size: clamp(2.1rem, 7vw, 3.6rem);
+  line-height: 1.35;
+  color: #fff4f9;
+  text-shadow:
+    0 0 10px rgba(255, 255, 255, 0.85),
+    0 0 24px rgba(255, 120, 190, 0.75),
+    0 0 46px rgba(255, 80, 160, 0.5);
+}
+
+/* ---------------------------------------------------------------------
+   DRIFTING HEARTS — a small fixed pool, each looping forever via a
+   plain CSS animation (transform + opacity only, no JS per-frame cost)
+   --------------------------------------------------------------------- */
+#ch5-hearts-container {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 635;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.ch5-heart {
+  position: absolute;
+  bottom: -5%;
+  font-size: 1.4rem;
+  opacity: 0;
+  color: #ff7fb2;
+  text-shadow: 0 0 8px rgba(255, 120, 180, 0.8);
+  will-change: transform, opacity;
+  animation-name: ch5-heart-drift;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+@keyframes ch5-heart-drift {
+  0%   { transform: translate3d(0, 0, 0) scale(0.6) rotate(-6deg); opacity: 0; }
+  10%  { opacity: 0.9; }
+  50%  { transform: translate3d(12px, -46vh, 0) scale(1) rotate(6deg); opacity: 0.8; }
+  90%  { opacity: 0.3; }
+  100% { transform: translate3d(-10px, -92vh, 0) scale(0.7) rotate(-4deg); opacity: 0; }
+}
