@@ -25,7 +25,7 @@ const cloud7 = document.getElementById('cloud7');
 const moon = document.getElementById('moon');
 const appContainer = document.getElementById('app-container');
 const starsContainer = document.getElementById('stars-container');
-const forestImg = document.getElementById('forest-img'); // Changed from beachVideo
+const forestImg = document.getElementById('forest-img'); 
 const firefliesContainer = document.getElementById('fireflies-container');
 
 // ---------------------------------------------------------------------
@@ -71,18 +71,18 @@ orb.addEventListener('click', () => {
   // Grab the audio element you added to index.html
   const audio1 = document.getElementById('site-audio-1');
   
-  // Attempt to play it. We use a catch block because some strict mobile browsers 
-  // might still require a specific type of user gesture, so this prevents the site from crashing if blocked.
+  // 👇 THE UPDATE: Added a 200ms (0.2s) delay before the music plays!
   if (audio1) {
-    audio1.play().catch(error => {
-      console.warn("Audio playback was prevented by the browser:", error);
-    });
+    setTimeout(() => {
+      audio1.play().catch(error => {
+        console.warn("Audio playback was prevented by the browser:", error);
+      });
+    }, 200); // 200 milliseconds = 0.2 seconds
   }
 
   // Fade out the orb and text, then start the next scene
   gsap.to([orb, text], { opacity: 0, duration: 0.5, onComplete: startScene2 });
 });
-
 
 function startScene2() {
   orb.classList.add('hidden');
@@ -390,13 +390,7 @@ function startButterflyFlight() {
   flightTl.to([forestImg, firefliesContainer], { opacity: 1, duration: 2, ease: "sine.inOut" }, "closeUp+=1");
   
   flightTl.to(butterflyWrap, {  duration: 0.1, yoyo: true, repeat: 4, ease: "sine.inOut" });
-  // Let go of the butterfly as the camera's follow target before it exits the
-  // scene (otherwise the camera keeps snapping to its exact position and can
-  // end up parked somewhere that no longer covers the full screen — black
-  // bars top/bottom for the rest of Chapter 2). But we still want the camera
-  // itself to keep panning upward toward the sky instead of freezing in
-  // place, so we hand control over to a direct tween on camera.targetY that
-  // continues in sync with the butterfly's own upward exit below.
+  
   flightTl.call(() => { camera.followY = false; });
 
   flightTl.to(camera, { targetY: "+=1000", duration: 12.0, ease: "sine.inOut" }, "<");
