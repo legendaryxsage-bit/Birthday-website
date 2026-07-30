@@ -68,8 +68,21 @@ window.pushChapter1CameraZoom = function (targetScale, duration, ease) {
 gsap.to([orb, text], { opacity: 1, duration: 2, delay: 0.5 });
 
 orb.addEventListener('click', () => {
+  // Grab the audio element you added to index.html
+  const audio1 = document.getElementById('site-audio-1');
+  
+  // Attempt to play it. We use a catch block because some strict mobile browsers 
+  // might still require a specific type of user gesture, so this prevents the site from crashing if blocked.
+  if (audio1) {
+    audio1.play().catch(error => {
+      console.warn("Audio playback was prevented by the browser:", error);
+    });
+  }
+
+  // Fade out the orb and text, then start the next scene
   gsap.to([orb, text], { opacity: 0, duration: 0.5, onComplete: startScene2 });
 });
+
 
 function startScene2() {
   orb.classList.add('hidden');
