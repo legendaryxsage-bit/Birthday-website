@@ -211,6 +211,23 @@ console.log("✅ SUCCESS: chapter3.js has loaded into the browser!");
     if (transitionStarted) return;
     transitionStarted = true;
 
+    // 👇 AUDIO LOGIC: Switch the music!
+    const audio1 = document.getElementById('site-audio-1');
+    const audio2 = document.getElementById('site-audio-2');
+    
+    // Pause the first track
+    if (audio1) {
+      audio1.pause();
+    }
+    
+    // Play the second track
+    if (audio2) {
+      audio2.play().catch(error => {
+        console.warn("Audio 2 playback was prevented by the browser:", error);
+      });
+    }
+
+    // Proceed with the visual animation
     window.ch2API.burstSparkle(ctaButton, '255,182,220');
     console.log('[Chapter 3] Button clicked! Starting Chapter 4 transition...');
 
@@ -220,7 +237,7 @@ console.log("✅ SUCCESS: chapter3.js has loaded into the browser!");
     startDisintegrationTransition();
   });
 
-    function startDisintegrationTransition() {
+  function startDisintegrationTransition() {
     // 1. Blow the button away smoothly in the wind
     gsap.to(ctaButton, {
       x: "+=150",
@@ -279,7 +296,6 @@ console.log("✅ SUCCESS: chapter3.js has loaded into the browser!");
       });
     });
   }
-
 
   function createWindSweep() {
     const layer = document.createElement('div');
