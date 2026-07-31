@@ -192,6 +192,7 @@
   font-family: 'Caveat', cursive;
   font-size: 1.3rem;
   text-decoration: none;
+  cursor: pointer;
 }
 
 #ch7-end-text {
@@ -201,4 +202,59 @@
   color: #ffe9c7;
   text-shadow: 0 0 12px rgba(255, 127, 178, 0.5);
   opacity: 0;
+}
+
+/* ---------------------------------------------------------------------
+   VIDEO POPUP — "Tap here" opens this instead of leaving the page.
+   Only `opacity` animates here (compositor-friendly), same rule as
+   everything else in this file, so it costs nothing extra.
+   --------------------------------------------------------------------- */
+#ch7-video-popup {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+}
+#ch7-video-popup.ch7-video-open { pointer-events: auto; }
+#ch7-video-backdrop {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(5, 0, 12, 0.92);
+}
+#ch7-video-box {
+  position: relative;
+  width: 92vw;
+  max-width: 720px;
+}
+#ch7-video-frame-wrap {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%; /* 16:9 */
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+#ch7-video-frame {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  border: 0;
+}
+#ch7-video-close {
+  position: absolute;
+  top: -46px; right: 0;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 182, 193, 0.6);
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
 }

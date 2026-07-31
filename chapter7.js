@@ -26,7 +26,7 @@ console.log("✅ SUCCESS: chapter7.js has loaded into the browser!");
     fontUrl: 'https://raw.githubusercontent.com/google/fonts/main/ofl/greatvibes/GreatVibes-Regular.ttf',
     signatureName1: 'Bitiiiii',
     signatureName2: 'Anuj',
-    linkUrl: '#',              // 👉 TODO: paste your real link here later
+    youtubeVideoId: 'U9pRlV4l0-NX7VXM' ,
     linkLabel: 'Tap here 💌'   // 👉 change the label if you want
   };
 
@@ -57,11 +57,47 @@ console.log("✅ SUCCESS: chapter7.js has loaded into the browser!");
   const linkEl = document.getElementById('ch7-link');
   const endText = document.getElementById('ch7-end-text');
 
+  const videoPopup = document.getElementById('ch7-video-popup');
+  const videoFrame = document.getElementById('ch7-video-frame');
+  const videoCloseBtn = document.getElementById('ch7-video-close');
+  const videoBackdrop = document.getElementById('ch7-video-backdrop');
+
   // Fill in config-driven content
   trackNameEl.textContent = CH7_CONFIG.trackName;
   audio.src = CH7_CONFIG.audioSrc;
-  linkEl.href = CH7_CONFIG.linkUrl;
   linkEl.textContent = CH7_CONFIG.linkLabel;
+
+  // ---------------------------------------------------------------------
+  // VIDEO POPUP — opens right on the page instead of navigating away.
+  // Setting the iframe src only when opened (and clearing it on close)
+  // is what actually stops playback — pausing alone doesn't work
+  // reliably across browsers for an embedded iframe player.
+  // ---------------------------------------------------------------------
+  function getYoutubeEmbedUrl() {
+    return 'https://www.youtube-nocookie.com/embed/' + CH7_CONFIG.youtubeVideoId +
+      '?autoplay=1&rel=0&modestbranding=1&playsinline=1&controls=1';
+  }
+  function openVideoPopup() {
+    videoFrame.src = getYoutubeEmbedUrl();
+    videoPopup.classList.remove('hidden');
+    videoPopup.classList.add('ch7-video-open');
+    gsap.to(videoPopup, { opacity: 1, duration: 0.35 });
+  }
+  function closeVideoPopup() {
+    gsap.to(videoPopup, {
+      opacity: 0, duration: 0.3, onComplete: function () {
+        videoPopup.classList.add('hidden');
+        videoPopup.classList.remove('ch7-video-open');
+        videoFrame.src = ''; // stops playback
+      }
+    });
+  }
+  linkEl.addEventListener('click', openVideoPopup);
+  linkEl.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openVideoPopup(); }
+  });
+  videoCloseBtn.addEventListener('click', closeVideoPopup);
+  videoBackdrop.addEventListener('click', closeVideoPopup);
 
   let signatureFont = null;
   let fontLoadFailed = false;

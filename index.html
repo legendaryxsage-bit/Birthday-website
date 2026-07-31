@@ -231,9 +231,9 @@
         <p id="ch7-fallback-name2" class="ch7-fallback-text"></p>
       </div>
 
-      <!-- 👉 Reserved space for your link — chapter7.js fills in the URL + label -->
+      <!-- 👉 Reserved space for the "Tap here" button — opens the video popup, never navigates away -->
       <div id="ch7-link-wrap" class="hidden">
-        <a id="ch7-link" href="#" target="_blank" rel="noopener"></a>
+        <div id="ch7-link" role="button" tabindex="0"></div>
       </div>
 
       <p id="ch7-end-text" class="hidden">End.....! 💕</p>
@@ -241,6 +241,19 @@
 
     <audio id="ch7-audio" preload="auto"></audio>
 
+  </div>
+
+  <!-- ===================== VIDEO POPUP — opened by the "Tap here" button, plays right on the page ===================== -->
+  <div id="ch7-video-popup" class="hidden">
+    <div id="ch7-video-backdrop"></div>
+    <div id="ch7-video-box">
+      <button id="ch7-video-close" aria-label="Close video">&times;</button>
+      <div id="ch7-video-frame-wrap">
+        <iframe id="ch7-video-frame" src="" title="Video"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen></iframe>
+      </div>
+    </div>
   </div>
 
   <!-- 👇 FIREBASE SCRIPTS 👇 -->
