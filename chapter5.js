@@ -117,11 +117,11 @@ console.log("✅ SUCCESS: chapter5.js has loaded into the browser!");
     }, null, 1.8);
   }
 
-  // "Make a wish..." now lives up in the sky (top: 14%, set in chapter5.css)
+  // "Blow the candles..." now lives up in the sky (top: 14%, set in chapter5.css)
   // rather than being measured off the cake's rendered top edge, so it never
   // ends up floating right in front of the cake.
 
-  // Reveal the bottom "Make a Wish" button and wire up its tap. Everything
+  // Reveal the bottom "Blow the candles" button and wire up its tap. Everything
   // after this point (wish text -> wind -> smoke -> fireworks -> vow) only
   // fires once she actually taps it.
   function showWishButton(wishBtn, wishText, cakeWrapper, cakeTable, flames, smokeWisps, darkenOverlay, finalVow) {
@@ -156,7 +156,7 @@ console.log("✅ SUCCESS: chapter5.js has loaded into the browser!");
   function playWishAndFinale(wishText, cakeWrapper, cakeTable, flames, smokeWisps, darkenOverlay, finalVow) {
     const tl = gsap.timeline();
 
-    // --- 3. "Make a wish..." appears above the cake --------------------------
+    // --- 3. "blow the candles..." appears above the cake --------------------------
     tl.to(wishText, {
       y: 0,
       opacity: 1,

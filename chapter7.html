@@ -1,0 +1,64 @@
+<!-- =====================================================================
+     CHAPTER 7 — THE MUSIC & THE SIGNATURES
+     Paste this block right after your #chapter6-container div, and
+     before your <script> includes.
+
+     Also add, BEFORE your chapter7.js <script> tag:
+     <script src="https://cdn.jsdelivr.net/npm/opentype.js@1.3.4/dist/opentype.min.js"></script>
+     (This is what turns the cursive font into a real "ink stroke" path
+     for the live-signature effect — see chapter7.js for details.)
+     ===================================================================== -->
+<div id="chapter7-container">
+
+  <!-- ===================== PAGE 1 — MUSIC PLAYER ===================== -->
+  <div id="ch7-page1" class="ch7-page">
+    <div id="ch7-player-card">
+
+      <div id="ch7-vinyl">
+        <div id="ch7-vinyl-center"></div>
+      </div>
+
+      <p id="ch7-play-message">Play this music 🎵</p>
+      <p id="ch7-track-name"><!-- filled in by chapter7.js --></p>
+
+      <button id="ch7-play-btn" aria-label="Play or pause the music">
+        <svg id="ch7-play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        <svg id="ch7-pause-icon" class="hidden" viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+      </button>
+
+      <div id="ch7-progress-track">
+        <div id="ch7-progress-fill"></div>
+      </div>
+
+      <div id="ch7-next-btn" role="button" tabindex="0">Next ➜</div>
+    </div>
+  </div>
+
+  <!-- ===================== PAGE 2 — LIVE SIGNATURES ===================== -->
+  <div id="ch7-page2" class="ch7-page hidden">
+
+    <!-- Real "ink stroke" signatures — built at runtime from the font (see chapter7.js) -->
+    <svg id="ch7-sig-svg" viewBox="0 0 600 640" preserveAspectRatio="xMidYMid meet">
+      <path id="ch7-sig-name1" class="ch7-sig-path"></path>
+      <path id="ch7-sig-heart" class="ch7-sig-path"></path>
+      <path id="ch7-sig-name2" class="ch7-sig-path"></path>
+    </svg>
+
+    <!-- Fallback shown only if the signature font can't load (e.g. no internet) -->
+    <div id="ch7-fallback-sig" class="hidden">
+      <p id="ch7-fallback-name1" class="ch7-fallback-text"></p>
+      <div id="ch7-fallback-heart">💗</div>
+      <p id="ch7-fallback-name2" class="ch7-fallback-text"></p>
+    </div>
+
+    <!-- 👉 Reserved space for your link — chapter7.js fills in the URL + label -->
+    <div id="ch7-link-wrap" class="hidden">
+      <a id="ch7-link" href="#" target="_blank" rel="noopener"></a>
+    </div>
+
+    <p id="ch7-end-text" class="hidden">End.....! 💕</p>
+  </div>
+
+  <audio id="ch7-audio" preload="auto"></audio>
+
+</div>

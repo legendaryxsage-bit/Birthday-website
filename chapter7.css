@@ -1,0 +1,204 @@
+/* =====================================================================
+   CHAPTER 7 — THE MUSIC & THE SIGNATURES
+   Append this whole block to the end of style.css (or link chapter7.css
+   separately in <head>, same as chapter5.css).
+
+   PERFORMANCE NOTE: every animated element here only ever animates
+   `transform` and `opacity` (never width/top/left), so the browser can
+   run these on the compositor thread instead of re-painting layout
+   every frame — same rule as Chapter 5/6. The signature "ink" effect
+   only ever has ONE <path> animating at a time.
+   ===================================================================== */
+
+#chapter7-container {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: radial-gradient(ellipse at 50% 40%, rgba(30, 10, 40, 0.5) 0%, rgba(5, 0, 12, 0.85) 100%);
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 750; /* stays above Chapter 6's 700-730 */
+}
+
+.ch7-page {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 6vh 6vw;
+}
+
+/* ---------------------------------------------------------------------
+   PAGE 1 — MUSIC PLAYER
+   --------------------------------------------------------------------- */
+#ch7-player-card {
+  width: 90vw;
+  max-width: 420px;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 182, 193, 0.3);
+  border-radius: 24px;
+  padding: 2.5rem 1.5rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3), inset 0 0 20px rgba(230, 230, 250, 0.05);
+}
+
+#ch7-vinyl {
+  width: min(38vw, 170px);
+  height: min(38vw, 170px);
+  margin: 0 auto 1.5rem;
+  border-radius: 50%;
+  background:
+    repeating-radial-gradient(circle, rgba(255,255,255,0.06) 0, rgba(255,255,255,0.06) 2px, transparent 3px, transparent 8px),
+    radial-gradient(circle, #2a1330 0%, #120814 70%, #0a050c 100%);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5), inset 0 0 12px rgba(0,0,0,0.6);
+  position: relative;
+  will-change: transform;
+}
+#ch7-vinyl-center {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 22%; height: 22%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffe9c7 0%, #ff7fb2 100%);
+  box-shadow: 0 0 10px rgba(255, 127, 178, 0.6);
+}
+#ch7-vinyl.ch7-spinning {
+  animation: ch7-spin 5s linear infinite;
+}
+@keyframes ch7-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+#ch7-play-message {
+  font-family: 'Caveat', cursive;
+  font-size: clamp(1.1rem, 4vw, 1.4rem);
+  color: #ffb6c1;
+  margin-bottom: 0.3rem;
+}
+#ch7-track-name {
+  font-family: 'Great Vibes', cursive;
+  font-size: clamp(1.6rem, 7vw, 2.2rem);
+  color: #fff4f9;
+  margin-bottom: 1.4rem;
+}
+
+#ch7-play-btn {
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(145deg, #ff7fb2, #ff1493);
+  box-shadow: 0 6px 18px rgba(255, 20, 147, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.4rem;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+#ch7-play-btn:active { transform: scale(0.94); }
+#ch7-play-btn svg { width: 26px; height: 26px; fill: #fff; }
+
+#ch7-progress-track {
+  width: 100%;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.15);
+  overflow: hidden;
+  margin-bottom: 1.6rem;
+}
+#ch7-progress-fill {
+  width: 100%;
+  height: 100%;
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  background: linear-gradient(90deg, #ff7fb2, #ffe9c7);
+  will-change: transform;
+}
+
+#ch7-next-btn {
+  display: inline-block;
+  padding: 0.6rem 1.5rem;
+  border-radius: 999px;
+  background: rgba(255, 182, 193, 0.15);
+  border: 1px solid rgba(255, 182, 193, 0.6);
+  color: #fff;
+  font-family: 'Caveat', cursive;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+#ch7-next-btn:active { transform: scale(0.96); }
+
+/* ---------------------------------------------------------------------
+   PAGE 2 — LIVE SIGNATURES
+   --------------------------------------------------------------------- */
+#ch7-sig-svg {
+  width: min(92vw, 520px);
+  height: auto;
+  overflow: visible;
+}
+.ch7-sig-path {
+  fill: #fff4f9;
+  fill-opacity: 0;
+  stroke: #fff4f9;
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0;
+  filter: drop-shadow(0 0 6px rgba(255, 127, 178, 0.55));
+}
+/* Heart gets its own lovely rose-red instead of the names' white */
+#ch7-sig-heart {
+  fill: #ff4d6d;
+  stroke: #ff4d6d;
+  filter: drop-shadow(0 0 8px rgba(255, 77, 109, 0.75));
+}
+
+#ch7-fallback-sig {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+.ch7-fallback-text {
+  font-family: 'Great Vibes', cursive;
+  font-size: clamp(2.4rem, 10vw, 3.8rem);
+  color: #fff4f9;
+  opacity: 0;
+}
+#ch7-fallback-heart {
+  font-size: 2.6rem;
+  opacity: 0;
+  transform: scale(0.5);
+  filter: drop-shadow(0 0 8px rgba(255, 127, 178, 0.6));
+}
+
+#ch7-link-wrap { margin-top: 0.8rem; opacity: 0; }
+#ch7-link {
+  display: inline-block;
+  padding: 0.7rem 1.7rem;
+  border-radius: 999px;
+  background: rgba(255, 182, 193, 0.15);
+  border: 1px solid rgba(255, 182, 193, 0.6);
+  color: #fff;
+  font-family: 'Caveat', cursive;
+  font-size: 1.3rem;
+  text-decoration: none;
+}
+
+#ch7-end-text {
+  margin-top: 1rem;
+  font-family: 'Great Vibes', cursive;
+  font-size: clamp(2.2rem, 9vw, 3.2rem);
+  color: #ffe9c7;
+  text-shadow: 0 0 12px rgba(255, 127, 178, 0.5);
+  opacity: 0;
+}

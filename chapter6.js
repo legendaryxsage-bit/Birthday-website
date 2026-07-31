@@ -103,13 +103,26 @@ console.log("✅ SUCCESS: chapter6.js has loaded into the browser!");
     triggerSuccessAnimation();
   });
 
+  // REAL Firebase Integration
   async function saveWishToFirebase(message) {
     try {
-      return new Promise(resolve => setTimeout(resolve, 1500));
+      // Connects to the 'db' we initialized in index.html
+      // Creates a folder called 'wishes' and saves the message and exact time
+      await db.collection('wishes').add({
+        wish: message,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      
+      console.log("Success! Wish saved to database.");
+      
     } catch (error) {
       console.error("Error saving wish:", error);
+      // Fallback delay just in case of internet failure so the animation still plays
+      await new Promise(resolve => setTimeout(resolve, 1500));
     }
   }
+
+
 
   function triggerSuccessAnimation() {
     card.style.opacity = '0';

@@ -6,14 +6,15 @@
   <title>Chapter 1 — The First Light</title>
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Great+Vibes&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="chapter7.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/opentype.js@1.3.4/dist/opentype.min.js"></script>
 </head>
 <body>
 
   <!-- 🎵 YOUR AUDIO FILE 🎵 -->
-  <audio id="site-audio-1" src="music1.mp3" loop preload="auto"></audio>
+  <audio id="site-audio-1" src="music1.mp3" preload="auto"></audio>
   <audio id="site-audio-2" src="music2.mp3" loop preload="auto"></audio>
-
 
   <div id="app-container">
     <div id="night-bg"></div>
@@ -136,15 +137,15 @@
       <div class="ch5-smoke" id="ch5-smoke-3"></div>
     </div>
 
-    <!-- "Make a wish..." floats above the cake (revealed only after the button is tapped) -->
-    <p id="ch5-wish-text">Make a wish...</p>
+    <!-- "Blow the candles..." floats above the cake (revealed only after the button is tapped) -->
+    <p id="ch5-wish-text">Blow the candles...</p>
 
     <!-- Bottom button — she taps this once the cake has landed -->
-    <div id="ch5-wish-btn" role="button" tabindex="0">Make a Wish 🎂</div>
+    <div id="ch5-wish-btn" role="button" tabindex="0">Blow the candles 🎂</div>
 
     <!-- The final vow — fades in once the fireworks are underway -->
     <div id="ch5-final-vow">
-      <p id="ch5-final-vow-text">Happy Birthday, My cherished...<br> , lalliii..&nbsp;💖⃟💗᪲᪲᪲
+      <p id="ch5-final-vow-text">Happy Birthday, My cherished...<br> , lalliii..&nbsp;💖⃟💗᪲᪲᪲</p>
     </div>
 
     <!-- A small pool of drifting hearts around the final vow -->
@@ -184,6 +185,90 @@
     <div id="ch6-sparkles-container"></div>
   </div>
 
+  <!-- =====================================================================
+       CHAPTER 7 — THE MUSIC & THE SIGNATURES
+       ===================================================================== -->
+  <div id="chapter7-container">
+
+    <!-- ===================== PAGE 1 — MUSIC PLAYER ===================== -->
+    <div id="ch7-page1" class="ch7-page">
+      <div id="ch7-player-card">
+
+        <div id="ch7-vinyl">
+          <div id="ch7-vinyl-center"></div>
+        </div>
+
+        <p id="ch7-play-message">Play this music 🎵</p>
+        <p id="ch7-track-name"><!-- filled in by chapter7.js --></p>
+
+        <button id="ch7-play-btn" aria-label="Play or pause the music">
+          <svg id="ch7-play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          <svg id="ch7-pause-icon" class="hidden" viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+        </button>
+
+        <div id="ch7-progress-track">
+          <div id="ch7-progress-fill"></div>
+        </div>
+
+        <div id="ch7-next-btn" role="button" tabindex="0">Next ➜</div>
+      </div>
+    </div>
+
+    <!-- ===================== PAGE 2 — LIVE SIGNATURES ===================== -->
+    <div id="ch7-page2" class="ch7-page hidden">
+
+      <!-- Real "ink stroke" signatures — built at runtime from the font (see chapter7.js) -->
+      <svg id="ch7-sig-svg" viewBox="0 0 600 550" preserveAspectRatio="xMidYMid meet">
+        <path id="ch7-sig-name1" class="ch7-sig-path"></path>
+        <path id="ch7-sig-heart" class="ch7-sig-path"></path>
+        <path id="ch7-sig-name2" class="ch7-sig-path"></path>
+      </svg>
+
+      <!-- Fallback shown only if the signature font can't load (e.g. no internet) -->
+      <div id="ch7-fallback-sig" class="hidden">
+        <p id="ch7-fallback-name1" class="ch7-fallback-text"></p>
+        <div id="ch7-fallback-heart">💗</div>
+        <p id="ch7-fallback-name2" class="ch7-fallback-text"></p>
+      </div>
+
+      <!-- 👉 Reserved space for your link — chapter7.js fills in the URL + label -->
+      <div id="ch7-link-wrap" class="hidden">
+        <a id="ch7-link" href="#" target="_blank" rel="noopener"></a>
+      </div>
+
+      <p id="ch7-end-text" class="hidden">End.....! 💕</p>
+    </div>
+
+    <audio id="ch7-audio" preload="auto"></audio>
+
+  </div>
+
+  <!-- 👇 FIREBASE SCRIPTS 👇 -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+
+  <script>
+    // Using 'var' prevents Acode from crashing during live reloads!
+    var firebaseConfig = {
+      apiKey: "AIzaSyAuR9hTLEQKBb9N2gTV2ZfBF1CTyja4bo8",
+      authDomain: "birthday-wishe-d89ce.firebaseapp.com",
+      projectId: "birthday-wishe-d89ce",
+      storageBucket: "birthday-wishe-d89ce.firebasestorage.app",
+      messagingSenderId: "434393898665",
+      appId: "1:434393898665:web:e8363515a21c936c4313b8",
+      measurementId: "G-6B3C6Z3E6D"
+    };
+
+    // Safety check to ensure Firebase only starts once
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    
+    // Attach db globally
+    var db = firebase.firestore();
+  </script>
+  <!-- 👆 FIREBASE SETUP END 👆 -->
+
   <!-- 👇 Your scripts remain at the very bottom 👇 -->
   <script src="script.js"></script>
   <script src="chapter2.js"></script>
@@ -191,6 +276,7 @@
   <script src="chapter4.js"></script>
   <script src="chapter5.js"></script>
   <script src="chapter6.js"></script>
+  <script src="chapter7.js"></script>
 
 </body>
 </html>
