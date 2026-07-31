@@ -28,7 +28,7 @@ console.log("✅ SUCCESS: chapter7.js has loaded into the browser!");
     signatureName2: 'Anuj',
     // 👉 TODO: paste a direct .mp4 URL here — e.g. a Firebase Storage
     // download URL or a Cloudinary video URL. See the notes below for why.
-    videoUrl: 'https://res.cloudinary.com/k0b9ki6m/video/upload/v1785492448/VID-20260729-WA0000_hyi1sx.mp4',
+    videoUrl: 'https://res.cloudinary.com/k0b9ki6m/video/upload/v1785541023/VID_20260731232935_hrco6f.mp4',
     linkLabel: 'Tap here 💌'   // 👉 change the label if you want
   };
 
