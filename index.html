@@ -243,15 +243,22 @@
 
   </div>
 
-  <!-- ===================== VIDEO POPUP — opened by the "Tap here" button, plays right on the page ===================== -->
+  <!-- ===================== VIDEO POPUP — opened by the "Tap here" button, plays right on the page =====================
+       Uses a native <video> element (not a YouTube iframe) so playback is a
+       real file your site controls end-to-end — no YouTube chrome, no
+       related videos, no navigating anywhere. `playsinline` is what stops
+       iPhones from yanking it into the native fullscreen player; `preload="none"`
+       means nothing downloads until she actually taps play. -->
   <div id="ch7-video-popup" class="hidden">
     <div id="ch7-video-backdrop"></div>
     <div id="ch7-video-box">
       <button id="ch7-video-close" aria-label="Close video">&times;</button>
       <div id="ch7-video-frame-wrap">
-        <iframe id="ch7-video-frame" src="" title="Video"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen></iframe>
+        <video id="ch7-video-el"
+          playsinline
+          webkit-playsinline="true"
+          controls
+          preload="none"></video>
       </div>
     </div>
   </div>

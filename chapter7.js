@@ -26,7 +26,9 @@ console.log("✅ SUCCESS: chapter7.js has loaded into the browser!");
     fontUrl: 'https://raw.githubusercontent.com/google/fonts/main/ofl/greatvibes/GreatVibes-Regular.ttf',
     signatureName1: 'Bitiiiii',
     signatureName2: 'Anuj',
-    youtubeVideoId: 'U9pRlV4l0-NX7VXM' ,
+    // 👉 TODO: paste a direct .mp4 URL here — e.g. a Firebase Storage
+    // download URL or a Cloudinary video URL. See the notes below for why.
+    videoUrl: 'https://res.cloudinary.com/k0b9ki6m/video/upload/v1785492448/VID-20260729-WA0000_hyi1sx.mp4',
     linkLabel: 'Tap here 💌'   // 👉 change the label if you want
   };
 
@@ -58,7 +60,7 @@ console.log("✅ SUCCESS: chapter7.js has loaded into the browser!");
   const endText = document.getElementById('ch7-end-text');
 
   const videoPopup = document.getElementById('ch7-video-popup');
-  const videoFrame = document.getElementById('ch7-video-frame');
+  const videoEl = document.getElementById('ch7-video-el');
   const videoCloseBtn = document.getElementById('ch7-video-close');
   const videoBackdrop = document.getElementById('ch7-video-backdrop');
 
@@ -68,30 +70,64 @@ console.log("✅ SUCCESS: chapter7.js has loaded into the browser!");
   linkEl.textContent = CH7_CONFIG.linkLabel;
 
   // ---------------------------------------------------------------------
-  // VIDEO POPUP — opens right on the page instead of navigating away.
-  // Setting the iframe src only when opened (and clearing it on close)
-  // is what actually stops playback — pausing alone doesn't work
-  // reliably across browsers for an embedded iframe player.
+  // VIDEO POPUP — plays a real video file inside the site, no navigation,
+  // no YouTube page/branding, no ads.
+  //
+  // Why a direct <video> file instead of an embed:
+  //  - Full control over playback (no related videos, no third-party UI)
+  //  - `playsinline` keeps it inside this popup on iPhone instead of
+  //    forcing the OS's native fullscreen video player
+  //  - One less external service in the loop → faster start, nothing can
+  //    change behavior on us later
+  //
+  // Why NOT GitHub raw as the host: GitHub raw isn't built for serving
+  // media — it doesn't reliably support the byte-range requests mobile
+  // browsers need to start playback quickly or let her scrub the
+  // timeline, it has practical file-size limits, and repeated hotlinking
+  // of a large file can get rate-limited. Firebase Storage (you're
+  // already using Firebase for this project — see the SDK scripts below)
+  // or Cloudinary are built for exactly this: proper streaming, a CDN in
+  // front of it, and no surprise throttling. Either works — just grab the
+  // public download URL and paste it into CH7_CONFIG.videoUrl above.
+  //
+  // Why we lazy-load: the <video> tag has `preload="none"`, and we only
+  // set its `src` the first time she taps — so nothing downloads or
+  // shows a loading spinner until she actually asks for it.
   // ---------------------------------------------------------------------
-  function getYoutubeEmbedUrl() {
-    return 'https://www.youtube-nocookie.com/embed/' + CH7_CONFIG.youtubeVideoId +
-      '?autoplay=1&rel=0&modestbranding=1&playsinline=1&controls=1';
-  }
   function openVideoPopup() {
-    videoFrame.src = getYoutubeEmbedUrl();
+    // Load the file on first tap only (keeps the page light until needed)
+    if (!videoEl.src) {
+      videoEl.src = CH7_CONFIG.videoUrl;
+    }
+
     videoPopup.classList.remove('hidden');
     videoPopup.classList.add('ch7-video-open');
     gsap.to(videoPopup, { opacity: 1, duration: 0.35 });
+
+    // IMPORTANT: this .play() call happens synchronously, directly inside
+    // the tap handler — not after the animation above, not inside a
+    // setTimeout. That's what makes it count as "triggered by a user
+    // gesture" to the browser, which is required or iOS Safari and
+    // Chrome on Android will silently block playback.
+    const playPromise = videoEl.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(function (err) {
+        console.warn('[Chapter 7] Video play was blocked — she may need to tap the play button on the video itself:', err);
+      });
+    }
   }
+
   function closeVideoPopup() {
     gsap.to(videoPopup, {
       opacity: 0, duration: 0.3, onComplete: function () {
         videoPopup.classList.add('hidden');
         videoPopup.classList.remove('ch7-video-open');
-        videoFrame.src = ''; // stops playback
+        videoEl.pause();
+        videoEl.currentTime = 0; // so it restarts from the beginning next time
       }
     });
   }
+
   linkEl.addEventListener('click', openVideoPopup);
   linkEl.addEventListener('keydown', function (e) {
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openVideoPopup(); }
